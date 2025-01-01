@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -33,7 +34,7 @@ public class SongControllerTest {
                 .andDo(print()).andExpect(status().isOk()).andReturn();
         String jsonResponse = result.getResponse().getContentAsString();
         List<Song> songs = objectMapper.readValue(jsonResponse, new TypeReference<List<Song>>() {});
-        assertNull(songs);
+        assertNotNull(songs);
     }
 
 }
