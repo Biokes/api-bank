@@ -1,6 +1,6 @@
 package com.biokes.apiBank.controller;
 
-import com.biokes.apiBank.data.models.Song;
+import com.biokes.apiBank.data.models.Track;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class SongControllerTest {
+public class TrackControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -32,8 +33,9 @@ public class SongControllerTest {
                 .contentType(APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk()).andReturn();
         String jsonResponse = result.getResponse().getContentAsString();
-        List<Song> songs = objectMapper.readValue(jsonResponse, new TypeReference<List<Song>>() {});
-        assertNotNull(songs);
+        List<Track> tracks = objectMapper.readValue(jsonResponse, new TypeReference<List<Track>>() {});
+        assertNotNull(tracks);
+        assertEquals(tracks.size(),0);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.biokes.apiBank.services.impl;
 
-import com.biokes.apiBank.data.models.Song;
+import com.biokes.apiBank.data.models.Track;
 import com.biokes.apiBank.data.repositories.SongRepo;
 import com.biokes.apiBank.services.interfaces.SongService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,9 @@ public class ApiBankSongService implements SongService {
     @Autowired
     private SongRepo repo;
     @Override
-    public List<Song> getLocalTrends() {
+    public List<Track> getLocalTrends() {
         return repo.findAll().stream()
-                .filter(song-> !song.isGlobalSong())
+                .filter(track -> !track.isGlobalSong())
                 .collect(Collectors.toList());
     }
 }

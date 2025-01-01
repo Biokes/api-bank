@@ -1,7 +1,7 @@
 package com.biokes.apiBank.data.models;
 
 
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Setter
@@ -10,9 +10,18 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
-@Embeddable
-public class Artist {
+@Entity
+@Table
+class Artist {
+    @Id
+    @Column(nullable = false, unique = true)
+    private String id;
+    @Column(nullable = false)
     private String name;
-    private String spotifyUri;
-    private String externalUri;
+    @Column(nullable = false)
+    private String type;
+    @Column(nullable = false)
+    private String uri;
+    @Embedded
+    private ExternalUrls externalUrls;
 }
