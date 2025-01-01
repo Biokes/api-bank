@@ -1,10 +1,9 @@
 package com.biokes.apiBank.controller;
 
 import com.biokes.apiBank.dto.ApiResponse;
-import com.biokes.apiBank.services.SongService;
+import com.biokes.apiBank.services.interfaces.SongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,11 +19,10 @@ public class SongController {
     private SongService songService;
     @GetMapping("localTrends")
     public ResponseEntity<?> getAllLocalTrends(){
-        return ResponseEntity.status(OK).body(
-                ApiResponse.builder().data(songService.getLocalTrends())
-                .isSuccessful(true)
-                .timeStamp(LocalDateTime.now())
-                .build()
-        );
+        ApiResponse response = new ApiResponse();
+        response.setData(songService.getLocalTrends());
+        response.setTimeStamp(LocalDateTime.now());
+        response.setSuccessful(true);
+        return ResponseEntity.status(OK).body(response);
     }
 }

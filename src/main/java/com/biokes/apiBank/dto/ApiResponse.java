@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Setter
 public class ApiResponse {
     private boolean isSuccessful;
     private Object data;

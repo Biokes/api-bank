@@ -1,6 +1,7 @@
 package com.biokes.apiBank.data.models;
 
 
+import jakarta.persistence.Embeddable;
 import lombok.*;
 
 @Setter
@@ -9,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
+@Embeddable
 public class Artist {
     private String name;
     private String spotifyUri;
