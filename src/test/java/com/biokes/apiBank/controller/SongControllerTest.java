@@ -28,7 +28,7 @@ public class SongControllerTest {
     private ObjectMapper  objectMapper;
     @Test
     void testUserCanFetchListOfTrendingSongs() throws Exception{
-        MvcResult result = mockMvc.perform(get("api/v1/localTrends")
+        MvcResult result = mockMvc.perform(get("/api/v1/songs/localTrends")
                 .contentType(APPLICATION_JSON))
                 .andDo(print()).andExpect(status().isOk()).andReturn();
         String jsonResponse = result.getResponse().getContentAsString();
