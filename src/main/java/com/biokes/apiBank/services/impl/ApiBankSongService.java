@@ -16,7 +16,7 @@ public class ApiBankSongService implements SongService {
     @Override
     public List<Track> getLocalTrends() {
         return repo.findAll().stream()
-                .filter(track -> !track.isGlobalSong())
-                .collect(Collectors.toList());
+                .filter(track -> !track.isGlobalData())
+                .toList();
     }
 }

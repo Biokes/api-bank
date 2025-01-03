@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -19,10 +21,11 @@ public class SongController {
     private SongService songService;
     @GetMapping("localTrends")
     public ResponseEntity<?> getAllLocalTrends(){
-        ApiResponse response = new ApiResponse();
-        response.setData(songService.getLocalTrends());
-        response.setTimeStamp(LocalDateTime.now());
-        response.setSuccessful(true);
-        return ResponseEntity.status(OK).body(response);
+        return ResponseEntity.status(OK).body(
+                new ApiResponse(
+                        true,
+                        songService.getLocalTrends() == null ? "no data available" :  songService.getLocalTrends() ,
+                        LocalDateTime.now())
+        );
     }
 }

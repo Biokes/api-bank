@@ -12,7 +12,7 @@ import lombok.*;
 @ToString
 @Entity
 @Table
-class Artist {
+public class Artist {
     @Id
     @Column(nullable = false, unique = true)
     private String id;

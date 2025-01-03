@@ -36,5 +36,6 @@ public class Track {
         @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
         @JoinColumn(name = "track_id")
         private List<Artist> artists;
+        private boolean isGlobalData;
 
 }
