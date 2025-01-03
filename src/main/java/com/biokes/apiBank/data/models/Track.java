@@ -15,26 +15,21 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 public class Track {
         @Id
-        @Column(nullable = false, unique = true)
         private String id;
-        @Column(nullable = false)
         private String name;
         private int discNumber;
         private int durationMs;
         private boolean explicit;
         private boolean isPlayable;
-        @Column(nullable = true)
         private String previewUrl;
         private int trackNumber;
         private boolean isLocal;
-        @Embedded
+        @ManyToOne
+        @JoinColumn(name = "externalUrls_id")
         private ExternalUrls externalUrls;
-        @Column(nullable = false)
         private String type;
-        @Column(nullable = false)
         private String uri;
         @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-        @JoinColumn(name = "track_id")
         private List<Artist> artists;
         private boolean isGlobalData;
 

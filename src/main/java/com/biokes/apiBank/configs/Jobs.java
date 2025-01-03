@@ -1,5 +1,8 @@
 package com.biokes.apiBank.configs;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,14 +15,18 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Map;
 
 @Configuration
 public class Jobs {
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Value("${SONG_API_KEY}")
     private String songApiKey;
     @Value("${SONG_API_HOST}")
     private String songApiHost;
-    @Scheduled(cron = "0 12 * * * 4")
+    @Scheduled(initialDelay = 0,cron = "0 12 * * * 4")
     public void getNigeriaTrendingSongsOfTheWeek() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(String.format("https://spotify81.p.rapidapi.com/top_200_tracks?country=NG&period=weekly&date=%s", getMostRecentThursday())))
@@ -28,11 +35,18 @@ public class Jobs {
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        String responseBody = response.body();
+        Map<String, Object> data= objectMapper.readValue(responseBody, Map.class);
+
     }
     public static LocalDate getMostRecentThursday() {
         LocalDate today = LocalDate.now();
         int daysToSubtract = (today.getDayOfWeek().getValue() - DayOfWeek.THURSDAY.getValue() + 7) % 7;
         if (daysToSubtract == 0) daysToSubtract = 7;
         return today.minusDays(daysToSubtract);
+    }
+    @Scheduled(initialDelay = 0, cron = "0 12 * * * 4")
+    public void getTopChartTrend(){
+
     }
 }

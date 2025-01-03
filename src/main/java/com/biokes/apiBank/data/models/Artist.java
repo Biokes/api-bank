@@ -11,17 +11,13 @@ import lombok.*;
 @Builder
 @ToString
 @Entity
-@Table
 public class Artist {
     @Id
-    @Column(nullable = false, unique = true)
     private String id;
-    @Column(nullable = false)
     private String name;
-    @Column(nullable = false)
     private String type;
-    @Column(nullable = false)
     private String uri;
-    @Embedded
+    @ManyToOne
+    @JoinColumn(name = "externalUrls_id")
     private ExternalUrls externalUrls;
 }
