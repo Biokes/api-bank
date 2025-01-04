@@ -3,7 +3,7 @@ package com.biokes.apiBank;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.biokes.apiBank.configs.Jobs.getMostRecentThursday;
+import static com.biokes.apiBank.config.Jobs.getMostRecentThursday;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest

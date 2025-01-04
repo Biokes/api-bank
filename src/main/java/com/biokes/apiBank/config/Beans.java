@@ -1,4 +1,4 @@
-package com.biokes.apiBank.configs;
+package com.biokes.apiBank.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Setter
 @JsonInclude
+@Getter
 public class ApiResponse {
     private boolean isSuccessful;
     private Object data;

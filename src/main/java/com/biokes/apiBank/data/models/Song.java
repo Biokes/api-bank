@@ -19,4 +19,5 @@ public class Song {
     private  ChartEntryData chartEntryData;
     @ManyToOne
     private TrackMetaData trackMetaData;
+    private boolean isLocalSong;
 }
