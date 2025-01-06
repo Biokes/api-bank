@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static jakarta.persistence.CascadeType.ALL;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -14,16 +15,23 @@ import lombok.*;
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Song {
+
     @Id
     @GeneratedValue
     private Long id;
+
     @JsonProperty("missingRequiredFields")
     private boolean missingRequiredFields;
-    @ManyToOne
+
+    @OneToOne(cascade = ALL)
     @JsonProperty("chartEntryData")
+    @JoinColumn(name = "chart_entry_data_id")
     private  ChartEntryData chartEntryData;
-    @ManyToOne
-    @JsonProperty("trackMetaData")
+
+    @OneToOne(cascade = ALL)
+    @JsonProperty("trackMetadata")
+    @JoinColumn(name = "track_meta_data_id")
     private TrackMetaData trackMetaData;
+
     private boolean isLocalSong;
 }

@@ -6,6 +6,8 @@ import lombok.*;
 
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.ALL;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -21,13 +23,13 @@ public class TrackMetaData {
     private String trackName;
     private String trackUri;
     private String displayImageUri;
-    @OneToMany
+    @OneToMany(cascade = ALL)
     private List<SpotifyWrap> artists;
-    @OneToMany
+    @OneToMany(cascade = ALL)
     private List<SpotifyWrap> producers;
-    @OneToMany
+    @OneToMany(cascade = ALL)
     private List<SpotifyWrap> labels;
-    @OneToMany
+    @OneToMany(cascade = ALL)
     private List<SpotifyWrap> songWriters;
     private String releaseDate;
 }

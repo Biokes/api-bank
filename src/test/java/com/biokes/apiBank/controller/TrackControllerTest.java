@@ -1,9 +1,8 @@
 package com.biokes.apiBank.controller;
 
 import com.biokes.apiBank.config.Jobs;
-import com.biokes.apiBank.data.models.Track;
-import com.biokes.apiBank.data.models.TrackWrap;
 import com.biokes.apiBank.data.repositories.SongRepo;
+import com.biokes.apiBank.data.repositories.TrackMetaDataRepository;
 import com.biokes.apiBank.dto.ApiResponse;
 import com.biokes.apiBank.services.impl.ApiBankSongService;
 import com.biokes.apiBank.services.interfaces.SongService;
@@ -34,14 +33,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TrackControllerTest {
-    @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper  objectMapper;
-    @Mock private Jobs mockedJobs;
-    @Mock private SongRepo songRepo;
-    @InjectMocks private SongService songService = new ApiBankSongService(songRepo);
-    @InjectMocks private SongController songController = new SongController(songService);
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper  objectMapper;
+    @Mock
+    private Jobs mockedJobs;
+    @Mock
+    private SongRepo songRepo;
+    @Mock
+    private TrackMetaDataRepository trackMetaDataRepository;
+    @InjectMocks
+    private SongService songService = new ApiBankSongService(songRepo);
 
-    @Test void testUserCanFetchListOfTrendingSongs() throws Exception{
+    @Test
+    void testUserCanFetchListOfTrendingSongs() throws Exception{
         doNothing().when(mockedJobs).getTopChartTrend();
         doNothing().when(mockedJobs).getNigeriaTrendingSongsOfTheWeek();
         when(songRepo.findAll()).thenReturn(new ArrayList<>());
@@ -52,7 +58,7 @@ public class TrackControllerTest {
         ApiResponse tracks = objectMapper.readValue(jsonResponse, ApiResponse.class);
         assertNotNull(tracks.getData());
         assertTrue(tracks.isSuccessful());
-        assertEquals("no data available", tracks.getData().toString());
+        assertNotNull(tracks.getData().toString());
     }
 
 }

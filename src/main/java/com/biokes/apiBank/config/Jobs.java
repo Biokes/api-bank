@@ -66,10 +66,7 @@ public class Jobs {
 
     private List<Song> getSongs(String responseBody) throws ApiBankException {
         try{
-            log.info("Response about to be mapped  =============>> {}",responseBody);
-//            jsonNode = objectMapper.readTree(responseBody);
             return objectMapper.readValue(responseBody, new TypeReference<List<Song>>() {});
-//            jsonNode = jsonNode.path("albums").get(0).path("tracks").path("items");
         }catch(JsonProcessingException exception){
             throw new ApiBankException(String.format("%s \n %s", INVALID_MAPPING.getMessage(), Arrays.toString(exception.getStackTrace())));
         }
