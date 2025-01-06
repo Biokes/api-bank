@@ -1,8 +1,11 @@
 package com.biokes.apiBank.config;
 
 import com.biokes.apiBank.data.models.Song;
+import com.biokes.apiBank.exception.ApiBankException;
 import com.biokes.apiBank.services.interfaces.SongService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,8 @@ import java.net.http.HttpResponse;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
+
+import static com.biokes.apiBank.exception.ApiBankExceptionMessages.INVALID_MAPPING;
 
 @Configuration
 public class Jobs {
@@ -40,7 +45,7 @@ public class Jobs {
         songService.persistGlobalSongs(songs);
     }
 
-    private List<Song> fetchSongs(String url) throws IOException, InterruptedException {
+    private List<Song> fetchSongs(String url) throws Exception{
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(String.format(url, getMostRecentThursday())))
                 .header("x-rapidapi-key", songApiKey)
@@ -49,8 +54,21 @@ public class Jobs {
                 .build();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         String responseBody =  response.body();
-        return objectMapper.readValue(responseBody, new TypeReference<>(){});
+        return getSongs(responseBody);
     }
+
+    private List<Song> getSongs(String responseBody) throws ApiBankException {
+        JsonNode jsonNode;
+        try{
+            jsonNode = objectMapper.readTree(responseBody);
+            jsonNode = jsonNode.path("albums").get(0).path("tracks");
+        }catch(JsonProcessingException exception){
+            throw new ApiBankException(INVALID_MAPPING.getMessage());
+        }
+        return objectMapper.convertValue(jsonNode, new TypeReference<>() {
+        });
+    }
+
     public static LocalDate getMostRecentThursday() {
         LocalDate today = LocalDate.now();
         int daysToSubtract = (today.getDayOfWeek().getValue() - DayOfWeek.THURSDAY.getValue() + 7) % 7;
