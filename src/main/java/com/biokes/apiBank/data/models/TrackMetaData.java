@@ -1,5 +1,6 @@
 package com.biokes.apiBank.data.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @ToString
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TrackMetaData {
     @Id
     @GeneratedValue
