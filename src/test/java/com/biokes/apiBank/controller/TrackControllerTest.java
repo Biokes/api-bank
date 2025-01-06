@@ -45,7 +45,6 @@ public class TrackControllerTest {
     private TrackMetaDataRepository trackMetaDataRepository;
     @InjectMocks
     private SongService songService = new ApiBankSongService(songRepo);
-
     @Test
     void testUserCanFetchListOfTrendingSongs() throws Exception{
         doNothing().when(mockedJobs).getTopChartTrend();
