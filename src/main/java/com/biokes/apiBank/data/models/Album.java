@@ -35,7 +35,11 @@ public class Album {
     private int total_tracks;
     private String type;
     private String uri;
-    @OneToMany(cascade = ALL)
-    @JoinColumn(name="artists_id")
+    @ManyToMany(cascade = ALL)
+    @JoinTable(
+            name = "album_artist",
+            joinColumns = @JoinColumn(name = "album_id"),
+            inverseJoinColumns = @JoinColumn(name = "artist_id")
+    )
     private List<Artist> artists;
 }

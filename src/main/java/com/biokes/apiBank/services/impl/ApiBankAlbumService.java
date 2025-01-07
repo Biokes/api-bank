@@ -1,6 +1,7 @@
 package com.biokes.apiBank.services.impl;
 
 import com.biokes.apiBank.data.models.Album;
+import com.biokes.apiBank.data.models.Artist;
 import com.biokes.apiBank.data.repositories.AlbumRepository;
 import com.biokes.apiBank.services.interfaces.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;

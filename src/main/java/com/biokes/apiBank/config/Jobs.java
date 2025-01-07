@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -47,6 +48,8 @@ public class Jobs {
     private String songApiHost;
     @Value("${SONG_RELEASE_API_HOST}")
     private String songReleaseApiHost;
+    @Value("${SCRAPER_API_HOST}")
+    private String scraperApiHost;
     @Scheduled(initialDelay = 1000, fixedRate = 604800000)
     public void getNigeriaTrendingSongsOfTheWeek() throws Exception {
         try{
@@ -73,18 +76,7 @@ public class Jobs {
         }
     }
 
-//    @Scheduled(initialDelay = 0)
-//    public void getTopArtists() throws Exception{
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(URI.create("https://spotify81.p.rapidapi.com/top_20_by_followers"))
-//                .header("x-rapidapi-key", songApiKey)
-//                .header("x-rapidapi-host", songApiHost)
-//                .method("GET", HttpRequest.BodyPublishers.noBody())
-//                .build();
-//        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-////        artistService.persistAtists(response.body());
-//    }
-    @Scheduled(initialDelay = 0, fixedRate = 604800000)
+//    @Scheduled(initialDelay = 0, fixedRate = 604800000)
     public void getLatestAlbumReleases()throws Exception{
         try{
             albumTracksService.wipe();
@@ -95,14 +87,10 @@ public class Jobs {
                     .header("x-rapidapi-host", songReleaseApiHost)
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
-            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("\nresponse ===> {}\n", response);
-            var body = response.body();
-            JsonNode node = objectMapper.readTree(body).path("albums").path("items");
-            List<Album> albums = objectMapper.convertValue(node,new TypeReference<>(){});
-            albumService.persistAlbum(albums);
+            List<Album> albums = getAlbums(request);
             albums.forEach(album -> {
                 try {
+                    log.info("\n===============album to find track = {}", album);
                     getAlbumTracks(album.getSpotifyId());
                 } catch (Exception e) {
                     log.info("Cause of error ============> {}", e.getMessage());
@@ -117,23 +105,36 @@ public class Jobs {
                 throw new ApiBankException(SOMETHING_WENT_WRONG.getMessage());
             }
     }
+
+    private List<Album> getAlbums(HttpRequest request) throws IOException, InterruptedException {
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        log.info("\nresponse ===> {}\n", response);
+        var body = response.body();
+        JsonNode node = objectMapper.readTree(body).path("albums").path("items");
+        List<Album> albums = objectMapper.convertValue(node,new TypeReference<>(){});
+        albumService.persistAlbum(albums);
+        return albums;
+    }
+
     public void getAlbumTracks(String albumId) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(String.format("https://spotify-scraper.p.rapidapi.com/v1/album/tracks?albumId=%s&limit=100",albumId)))
                 .header("x-rapidapi-key", songApiKey)
-                .header("x-rapidapi-host", songApiHost)
+                .header("x-rapidapi-host", scraperApiHost)
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
         try{
-            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            JsonNode node = objectMapper.readTree(response.body()).path("items");
-            List<Track> albumTracks = objectMapper.convertValue(node, new TypeReference<>(){});
-            albumTracksService.persist(albumTracks,albumId);
+            persistTracksWithAlbumIdAndResponse(albumId, request);
         }catch (Exception e) {
             log.info("\nCause of error ============> {}\n", e.getMessage());
-            log.info("\nCause of error ============> {}\n", Arrays.toString(e.getStackTrace()));
             throw new ApiBankException(SOMETHING_WENT_WRONG.getMessage());
         }
+    }
+    private void persistTracksWithAlbumIdAndResponse(String albumId, HttpRequest request) throws IOException, InterruptedException {
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        JsonNode node = objectMapper.readTree(response.body()).path("tracks").path("items");
+        List<Track> albumTracks = objectMapper.convertValue(node, new TypeReference<>(){});
+        albumTracksService.persist(albumTracks, albumId);
     }
     private List<Song> fetchSongs(String url) throws Exception{
         try {
