@@ -47,6 +47,8 @@ public class Jobs {
     @Scheduled(initialDelay = 1000, fixedRate = 604800000)
     public void getNigeriaTrendingSongsOfTheWeek() throws Exception {
         try{
+            songService.deleteAllLocalSongs();
+            log.info("\n===============Getting the trends of Nigeria for the week==================\n");
             List<Song> songs = fetchSongs("https://spotify81.p.rapidapi.com/top_200_tracks?country=NG&period=weekly&date=%s");
             songService.persistLocalSongs(songs);
         }catch (Exception e) {
@@ -58,6 +60,7 @@ public class Jobs {
     @Scheduled(initialDelay = 1000, fixedRate = 604800000)
     public void getTopChartTrend() throws Exception {
         try {
+            log.info("\n===============Getting the trends of Globe for the week==================\n");
             List<Song> songs = fetchSongs("https://spotify81.p.rapidapi.com/top_200_tracks?country=GLOBAL&period=weekly&date=%s");
             songService.persistGlobalSongs(songs);
         } catch (Exception e) {
@@ -78,9 +81,10 @@ public class Jobs {
 //        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 ////        artistService.persistAtists(response.body());
 //    }
-    @Scheduled(initialDelay = 0)
+    @Scheduled(initialDelay = 0, fixedRate = 604800000)
     public void getLatestAlbumReleases()throws Exception{
         try{
+            log.info("\n===============Getting the newest releases of Nigeria for the week==================\n");
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://spotify117.p.rapidapi.com/new_releases/?country=NG"))
                     .header("x-rapidapi-key", songApiKey)
@@ -88,7 +92,9 @@ public class Jobs {
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            JsonNode node = objectMapper.readTree(response.body()).path("albums").path("items");
+            log.info("\nresponse ===> {}\n", response);
+            var body = response.body();
+            JsonNode node = objectMapper.readTree(body).path("albums").path("items");
             List<Album> albums = objectMapper.convertValue(node,new TypeReference<>(){});
             albums.forEach(album -> {
                 try {
@@ -99,12 +105,12 @@ public class Jobs {
                     throw new RuntimeException(e);
                 }
             });
-        }catch (Exception e) {
+        }
+        catch (Exception e) {
             log.info("\nCause of error ============> {}\n", e.getMessage());
             log.info("\nCause of error ============> {}\n", Arrays.toString(e.getStackTrace()));
                 throw new ApiBankException(SOMETHING_WENT_WRONG.getMessage());
             }
-
     }
     public void getAlbumTracks(String albumId) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()

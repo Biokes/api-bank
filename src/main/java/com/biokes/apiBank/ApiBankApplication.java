@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 public class ApiBankApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(ApiBankApplication.class, args);
 	}
