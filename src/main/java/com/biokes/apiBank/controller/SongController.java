@@ -1,6 +1,8 @@
 package com.biokes.apiBank.controller;
 
 import com.biokes.apiBank.dto.ApiResponse;
+import com.biokes.apiBank.services.interfaces.AlbumService;
+import com.biokes.apiBank.services.interfaces.AlbumTracksService;
 import com.biokes.apiBank.services.interfaces.SongService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 public class SongController {
     private final SongService songService;
+    private final AlbumService albumService;
     @GetMapping("localTrends")
     public ResponseEntity<?> getAllLocalTrends(){
         return ResponseEntity.status(OK).body(
@@ -40,5 +43,14 @@ public class SongController {
                         )
         );
     }
-
+    @GetMapping("new-releases/albums")
+    public ResponseEntity<?> getNewReleasedAlbum(){
+        return ResponseEntity.status(OK).body(
+                new ApiResponse(
+                        true,
+                        albumService.getLatestAlbum() == null || albumService.getLatestAlbum().isEmpty() ? "no data available" : albumService.getLatestAlbum(),
+                        now()
+                )
+        );
+    }
 }

@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface AlbumService {
     void persistAlbum(List<Album> albums);
+
+    List<Album> getLatestAlbum();
 }

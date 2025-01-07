@@ -4,6 +4,7 @@ import com.biokes.apiBank.data.models.Album;
 import com.biokes.apiBank.data.models.Song;
 import com.biokes.apiBank.data.models.Track;
 import com.biokes.apiBank.exception.ApiBankException;
+import com.biokes.apiBank.services.interfaces.AlbumService;
 import com.biokes.apiBank.services.interfaces.AlbumTracksService;
 import com.biokes.apiBank.services.interfaces.SongService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,8 +36,8 @@ public class Jobs {
     private ObjectMapper objectMapper;
     @Autowired
     private SongService songService;
-//    @Autowired
-//    private AlbumService albumService;
+    @Autowired
+    private AlbumService albumService;
     @Autowired
     private AlbumTracksService albumTracksService;
 
@@ -44,10 +45,12 @@ public class Jobs {
     private String songApiKey;
     @Value("${SONG_API_HOST}")
     private String songApiHost;
+    @Value("${SONG_RELEASE_API_HOST}")
+    private String songReleaseApiHost;
     @Scheduled(initialDelay = 1000, fixedRate = 604800000)
     public void getNigeriaTrendingSongsOfTheWeek() throws Exception {
         try{
-            songService.deleteAllLocalSongs();
+//            songService.deleteAllLocalSongs();
             log.info("\n===============Getting the trends of Nigeria for the week==================\n");
             List<Song> songs = fetchSongs("https://spotify81.p.rapidapi.com/top_200_tracks?country=NG&period=weekly&date=%s");
             songService.persistLocalSongs(songs);
@@ -84,11 +87,12 @@ public class Jobs {
     @Scheduled(initialDelay = 0, fixedRate = 604800000)
     public void getLatestAlbumReleases()throws Exception{
         try{
+            albumTracksService.wipe();
             log.info("\n===============Getting the newest releases of Nigeria for the week==================\n");
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://spotify117.p.rapidapi.com/new_releases/?country=NG"))
                     .header("x-rapidapi-key", songApiKey)
-                    .header("x-rapidapi-host", songApiHost)
+                    .header("x-rapidapi-host", songReleaseApiHost)
                     .method("GET", HttpRequest.BodyPublishers.noBody())
                     .build();
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
@@ -96,6 +100,7 @@ public class Jobs {
             var body = response.body();
             JsonNode node = objectMapper.readTree(body).path("albums").path("items");
             List<Album> albums = objectMapper.convertValue(node,new TypeReference<>(){});
+            albumService.persistAlbum(albums);
             albums.forEach(album -> {
                 try {
                     getAlbumTracks(album.getSpotifyId());
@@ -123,7 +128,7 @@ public class Jobs {
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             JsonNode node = objectMapper.readTree(response.body()).path("items");
             List<Track> albumTracks = objectMapper.convertValue(node, new TypeReference<>(){});
-            albumTracksService.persist(albumTracks);
+            albumTracksService.persist(albumTracks,albumId);
         }catch (Exception e) {
             log.info("\nCause of error ============> {}\n", e.getMessage());
             log.info("\nCause of error ============> {}\n", Arrays.toString(e.getStackTrace()));

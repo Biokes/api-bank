@@ -16,4 +16,9 @@ public class ApiBankAlbumService implements AlbumService {
     public void persistAlbum(List<Album> albums) {
         albumRepository.saveAll(albums);
     }
+
+    @Override
+    public List<Album> getLatestAlbum() {
+        return albumRepository.findAll();
+    }
 }

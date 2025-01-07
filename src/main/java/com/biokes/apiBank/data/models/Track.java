@@ -49,4 +49,5 @@ public class Track {
         @JsonProperty("type")
         private String type;
         private String uri;
+        private String albumId;
 }

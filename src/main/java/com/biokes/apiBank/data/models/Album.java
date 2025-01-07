@@ -1,5 +1,6 @@
 package com.biokes.apiBank.data.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,6 +15,7 @@ import static jakarta.persistence.CascadeType.ALL;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Album {
     private String album_type;
     @Id
@@ -33,5 +35,7 @@ public class Album {
     private int total_tracks;
     private String type;
     private String uri;
-
+    @OneToMany(cascade = ALL)
+    @JoinColumn(name="artists_id")
+    private List<Artist> artists;
 }
