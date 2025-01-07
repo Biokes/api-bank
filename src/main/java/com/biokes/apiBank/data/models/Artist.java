@@ -13,6 +13,7 @@ import lombok.*;
 @Builder
 @ToString
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Artist {
     @Id
     private String id;
