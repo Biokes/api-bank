@@ -1,4 +1,4 @@
-package com.biokes.apiBank.controller;
+package com.biokes.apiBank.handler;
 
 import com.biokes.apiBank.dto.ApiErrorResponse;
 import org.springframework.http.ResponseEntity;
